@@ -16,6 +16,8 @@ class Signup
         $this->email = $email;
     }
 
+
+
     public function hashPassword()
     {
         $options = [
