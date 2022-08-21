@@ -6,7 +6,7 @@ def login(username,password) :
         'user' : username,
         'pass' : password
     }
-    response = requests.post("http://localhost/api/apis/verify",data=payload)
+    response = requests.post("http://api.com/api/apis/verify",data=payload)
     if(response.status_code == 200):
         return True
     elif (response.status_code == 403):
