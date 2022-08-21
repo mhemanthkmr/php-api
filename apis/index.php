@@ -2,6 +2,8 @@
 error_reporting(E_ALL ^ E_DEPRECATED);
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/apis/Rest.api.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/apis/lib/Database.class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/api/apis/lib/Signup.class.php");
+
 class API extends REST
 {
 
@@ -92,7 +94,20 @@ class API extends REST
         return bin2hex($bytes);
     }
 
-
+    private function gen_Hash()
+    {
+        if (isset($this->_request['pass'])) {
+            $s = new Signup("", $this->_request['pass'], "");
+            $hash = $s->hashPassword();
+            $data = [
+                "hash" => $hash,
+                "val" => $this->_request['pass'],
+                "verify" => password_verify($this->_request['pass'], $hash)
+            ];
+            $data = $this->json($data);
+            $this->response($data, 200);
+        }
+    }
 
 
     /*************API SPACE END*********************/
