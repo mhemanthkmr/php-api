@@ -15,4 +15,12 @@ class Signup
         $this->password = $password;
         $this->email = $email;
     }
+
+    public function hashPassword()
+    {
+        $options = [
+            'cost' => 9,
+        ];
+        return password_hash($this->password, PASSWORD_BCRYPT, $options);
+    }
 }
