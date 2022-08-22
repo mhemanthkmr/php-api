@@ -1,5 +1,5 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'] . "/api/apis/lib/Database.class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Database.class.php");
 class REST
 {
 
