@@ -23,7 +23,7 @@ class API extends REST
          */
     public function processApi()
     {
-        $func = strtolower(trim(str_replace("api/apis/", "", $_REQUEST['rquest'])));
+        $func = strtolower(trim(str_replace("api/", "", $_REQUEST['rquest'])));
         print($func);
         if ((int)method_exists($this, $func) > 0)
             $this->$func();
@@ -47,7 +47,7 @@ class API extends REST
 
     private function hello()
     {
-        print_r($GLOBALS);
+        print_r($_REQUEST);
     }
 
     private function db()
@@ -101,7 +101,14 @@ class API extends REST
                 $email = $this->_request['email'];
                 $pass = $this->_request['pass'];
                 $username = $this->_request['username'];
-                $s = new Signup($email, $pass, $username);
+                $s = new Signup($username, $pass, $email);
+
+                $data = [
+                    "Message" => "User Created Successfully",
+                    "Insert ID" => $s->getInsertID(),
+                ];
+                $data = $this->json($data);
+                $this->response($data, 200);
             } else {
                 $data = [
                     "Error" => "Not Acceptable",
@@ -117,7 +124,14 @@ class API extends REST
             $this->response($data, 400);
         }
     }
-
+    // private function userexist()
+    // {
+    //     $username = $this->_request['username'];
+    //     $email = $this->_request['email'];
+    //     $pass = $this->_request['pass'];
+    //     $s = new Signup($email, $pass, $username);
+    //     $s->userExists();
+    // }
     private function gen_Hash()
     {
         if (isset($this->_request['pass'])) {
