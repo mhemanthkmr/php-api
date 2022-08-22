@@ -17,6 +17,7 @@ class Signup
         $this->password = $password;
         $this->email = $email;
         if ($this->userExists()) {
+
             throw new Exception("User already exists");
         }
         $bytes = random_bytes(16);
@@ -27,7 +28,8 @@ class Signup
         if (!mysqli_query($this->db, $query)) {
             throw new Exception("Unable to signup, user account might already exist.");
         } else {
-            // $this->id = mysqli_insert_id($this->db);
+
+            $this->id = mysqli_insert_id($this->db);
             // // $this->sendVerificationMail();
             // // $f = new Folder();
             // session_start();
@@ -39,9 +41,21 @@ class Signup
 
     public function userExists()
     {
-        return false;
+        $query = "SELECT * FROM auth  WHERE username = '$this->username';";
+        $query_run = mysqli_query($this->db, $query);
+        if (mysqli_num_rows($query_run) > 0) {
+            // echo $query_run;
+            return true;
+        } else {
+            // echo $query_run;
+            return false;
+        }
     }
 
+    public function getInsertID()
+    {
+        return $this->id;
+    }
 
     public function hashPassword()
     {
