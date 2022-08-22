@@ -94,6 +94,16 @@ class API extends REST
         return bin2hex($bytes);
     }
 
+    private function signUp()
+    {
+        if (isset($this->_request['pass']) and isset($this->_request['username']) and isset($this->_request['email'])) {
+            $email = $this->_request['email'];
+            $pass = $this->_request['pass'];
+            $username = $this->_request['username'];
+            $s = new Signup($email, $pass, $username);
+        }
+    }
+
     private function gen_Hash()
     {
         if (isset($this->_request['pass'])) {
