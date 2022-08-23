@@ -9,7 +9,8 @@ class API extends REST
 
     public $data = "";
 
-
+    private $current_call;
+    private $name = "Hemanth";
     public function __construct()
     {
         parent::__construct();                // Init parent contructor
@@ -29,28 +30,12 @@ class API extends REST
             $this->$func();
         } else {
             if (isset($_GET['namespace'])) {
-                $dir = $_SERVER['DOCUMENT_ROOT'] . '/api/apis' . $_GET['namespace'];
+                $dir = $_SERVER['DOCUMENT_ROOT'] . '/api/apis/' . $_GET['namespace'];
                 $file = $dir . '/' . $func . '.php';
-                $methods = scandir($dir);
-                // echo $file;
                 if (file_exists($file)) {
-                    // include $file;
-                    // $this->current_call = Closure::bind(${$func}, $this, get_class());
-                    // $this->$func();
-                    // var_dump($methods);
-                    foreach ($methods as $m) {
-                        if ($m == "." or $m == "..") {
-                            continue;
-                        }
-                        $basem = basename($m, '.php');
-                        // echo "Trying to call $basem() for $func()\n";
-                        if ($basem == $func) {
-                            include $dir . "/" . $m;
-                            // echo $dir . "/" . $m;
-                            $this->current_call = Closure::bind(${$basem}, $this, get_class());
-                            $this->$basem();
-                        }
-                    }
+                    include $file;
+                    $this->current_call = Closure::bind(${$func}, $this, get_class());
+                    $this->response($this->$func(), 200);
                 } else {
                     $this->response($this->json(['error' => 'method_not_found']), 404);
                 }
@@ -74,10 +59,20 @@ class API extends REST
                 // }
             } else {
                 //we can even process functions without namespace here.
-                $this->response($this->json(['error' => 'method_not_found']), 404);
+                $this->response($this->json(['error' => 'method_not_found', 'message' => $_REQUEST]), 404);
             }
         }
     }
+
+    public function __call($method, $args)
+    {
+        if (is_callable($this->current_call)) {
+            return call_user_func_array($this->current_call, $args);
+        } else {
+            $this->response($this->json(['error' => 'methood_not_callable']), 404);
+        }
+    }
+
 
     /*************API SPACE START*******************/
 
