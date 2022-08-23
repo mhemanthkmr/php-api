@@ -24,11 +24,59 @@ class API extends REST
     public function processApi()
     {
         $func = strtolower(trim(str_replace("api/", "", $_REQUEST['rquest'])));
-        print($func);
-        if ((int)method_exists($this, $func) > 0)
+        // print($func);
+        if ((int)method_exists($this, $func) > 0) {
             $this->$func();
-        else
-            $this->response('', 400);                // If the method not exist with in this class, response would be "Page not found".
+        } else {
+            if (isset($_GET['namespace'])) {
+                $dir = $_SERVER['DOCUMENT_ROOT'] . '/api/apis' . $_GET['namespace'];
+                $file = $dir . '/' . $func . '.php';
+                $methods = scandir($dir);
+                // echo $file;
+                if (file_exists($file)) {
+                    // include $file;
+                    // $this->current_call = Closure::bind(${$func}, $this, get_class());
+                    // $this->$func();
+                    // var_dump($methods);
+                    foreach ($methods as $m) {
+                        if ($m == "." or $m == "..") {
+                            continue;
+                        }
+                        $basem = basename($m, '.php');
+                        // echo "Trying to call $basem() for $func()\n";
+                        if ($basem == $func) {
+                            include $dir . "/" . $m;
+                            // echo $dir . "/" . $m;
+                            $this->current_call = Closure::bind(${$basem}, $this, get_class());
+                            $this->$basem();
+                        }
+                    }
+                } else {
+                    $this->response($this->json(['error' => 'method_not_found']), 404);
+                }
+
+                /** 
+                 * Use the following snippet if you want to include multiple files
+                 */
+                // $methods = scandir($dir);
+                // //var_dump($methods);
+                // foreach($methods as $m){
+                //     if($m == "." or $m == ".."){
+                //         continue;
+                //     }
+                //     $basem = basename($m, '.php');
+                //     //echo "Trying to call $basem() for $func()\n";
+                //     if($basem == $func){
+                //         include $dir."/".$m;
+                //         $this->current_call = Closure::bind(${$basem}, $this, get_class());
+                //         $this->$basem();
+                //     }
+                // }
+            } else {
+                //we can even process functions without namespace here.
+                $this->response($this->json(['error' => 'method_not_found']), 404);
+            }
+        }
     }
 
     /*************API SPACE START*******************/
