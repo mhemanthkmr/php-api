@@ -59,7 +59,7 @@ class API extends REST
                 // }
             } else {
                 //we can even process functions without namespace here.
-                $this->response($this->json(['error' => 'method_not_found', 'message' => $_REQUEST]), 404);
+                $this->response($this->json(['error' => 'method_not_found']), 404);
             }
         }
     }
