@@ -1,11 +1,12 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/Rest.api.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Database.class.php");
-require_once("/var/www/api/api/lib/User.Class.php");
+require_once("/var/www/api/api/lib/Group.class.php");
+require_once("/var/www/api/api/lib/User.class.php");
 ${basename(__FILE__, '.php')} = function () {
     if ($this->get_request_method() == "POST") {
         if (isset($_POST['username'])) {
-            $u = new User();
+            $u = new Group();
             $username = $_POST['username'];
             $result = $u->getUserData($username);
             $data = $this->json($result);
@@ -18,4 +19,6 @@ ${basename(__FILE__, '.php')} = function () {
             $this->response($data, 400);
         }
     }
+    // $s = new User("mhemanthkmr");
+    // print($s->isActive());
 };
