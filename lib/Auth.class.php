@@ -8,6 +8,9 @@ class Auth
     private $db;
     private $isTokenAuth = false;
     private $loginToken = null;
+    private $username = null;
+    private $password = null;
+    private $token = null;
 
     public function __construct($username, $password = NULL)
     {
@@ -47,11 +50,11 @@ class Auth
     private function addSession()
     {
         $token = Auth::generateRandomHash(32);
-        $query = "INSERT INTO `api`.`session` (`username`, `token`) VALUES ('$this->username', '$token');";
+        $query = "INSERT INTO `session` (`username`, `token`) VALUES ('$this->username', '$token');";
         if (mysqli_query($this->db, $query)) {
             return $token;
         } else {
-            throw new Exception(mysqli_error($this->db));
+            throw new Exception("Error: Aldready logged in from another device. Please logout from there first.");
         }
     }
 

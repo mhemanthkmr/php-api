@@ -10,13 +10,14 @@ ${basename(__FILE__, '.php')} = function () {
             $auth = new Auth($username, $password);
             $data = [
                 "message" => "Login success",
+                "user" => $username,
                 "token" => $auth->getAuthToken()
             ];
             $data = $this->json($data);
             $this->response($data, 200);
         } catch (Exception $e) {
             $data = [
-                "error" => $e->getMessage()
+                "error" => $e->getMessage(),
             ];
             $data = $this->json($data);
             $this->response($data, 406);

@@ -9,14 +9,16 @@ class Signup
     private $email;
     private $db;
     private $token;
+    private $name;
 
 
-    public function __construct($username, $password, $email)
+    public function __construct($username, $password, $email, $name)
     {
         $this->db = Database::getConnection();
         $this->username = $username;
         $this->password = $password;
         $this->email = $email;
+        $this->name = $name;
         if ($this->userExists()) {
             throw new Exception("User already exists");
         }
@@ -24,10 +26,10 @@ class Signup
             throw new Exception("Email already exists");
         }
         $bytes = random_bytes(16);
-        $this->token = $token = bin2hex($bytes); //to verify users over email.
+        $this->token = $token = bin2hex($bytes); //to verify auth over email.
         $password = $this->hashPassword();
-        //Homework - make a proper flow to throw username already exists
-        $query = "INSERT INTO `auth` (`username`, `password`, `email`, `active`, `token`) VALUES ('$username', '$password', '$email', 0, '$token');";
+        $query = "INSERT INTO `auth` (`name`,`username`, `password`, `email`, `active`, `token`) VALUES ('$name','$username', '$password', '$email', 0, '$token');";
+        // die($query);
         if (!mysqli_query($this->db, $query)) {
             throw new Exception("Unable to signup, user account might already exist.");
         } else {
@@ -51,12 +53,15 @@ class Signup
         $apiInstance = new SendinBlue\Client\Api\TransactionalEmailsApi(new GuzzleHttp\Client(), $credentials);
 
         $sendSmtpEmail = new \SendinBlue\Client\Model\SendSmtpEmail([
-            'subject' => 'Verify your Account',
-            'sender' => ['name' => "HemanthKumar M", 'email' => "noreply@mhemanthkmr.me"],
-            // 'replyTo' => ['name' => '', 'email' => 'contact@sendinblue.com'],
-            'to' => [['name' => $this->username, 'email' => $this->email]],
-            'htmlContent' => '<html><body><h1>This is a transactional email {{params.bodyMessage}}</h1></body></html>',
-            'params' => ['bodyMessage' => $token]
+            'subject' => "Verify Your Account",
+            'sender' => ['name' => "Ethic Electronics", 'email' => "admin@ethocelectronics.com"],
+            'to' => [['name' => $this->name, 'email' => $this->email]],
+            'htmlContent' => "<h2>You have Register with the Ethic Electronics</h2>
+        <h5>Verify Your email to login with the below given link</h5>
+        <br/><br/>
+        <h1$token><h1>
+        <a href='http://wordpress.selfmade.fun/verifyemail.php?token=$token'>Click Me</a>",
+            // 'params' => ['bodyMessage' => $message]
         ]);
 
         try {

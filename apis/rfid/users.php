@@ -1,29 +1,30 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/Rest.api.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Database.class.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Signup.class.php");
+
 ${basename(__FILE__, '.php')} = function () {
     try {
-        if ($this->get_request_method() == "POST") {
-            if (isset($this->_request['name']) and isset($this->_request['pass']) and isset($this->_request['username']) and isset($this->_request['email'])) 
-            {
-                $email = $this->_request['email'];
-                $pass = $this->_request['pass'];
-                $username = $this->_request['username'];
-                $name = $this->_request['name'];
-                $s = new Signup($username, $pass, $email, $name);
+        if ($this->get_request_method() == "GET" and isset($this->_request['uid'])) {
+            $db = Database::getConnection();
+            $uid = $this->_request['uid'];
+            $query = "SELECT * FROM `rfid` WHERE `uid` = '$uid';";
+            $result = mysqli_query($db, $query);
+            $row = mysqli_fetch_assoc($result);
+            if($row['uid'] == $uid){
                 $data = [
-                    "Message" => "User Created Successfully",
-                    "Insert ID" => $s->getInsertID(),
+                    "uid" => $row['uid'],
+                    "name" => $row['name'],
+                    "status" => $row['status'],
+                    "timestamp" => $row['timestamp'],
                 ];
                 $data = $this->json($data);
                 $this->response($data, 200);
             } else {
                 $data = [
-                    "Error" => "Not Acceptable",
+                    "Error" => "Not Found",
                 ];
                 $data = $this->json($data);
-                $this->response($data, 406);
+                $this->response($data, 404);
             }
         } else {
             $data = [

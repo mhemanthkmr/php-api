@@ -1,6 +1,4 @@
 <?php
-
-
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Database.class.php");
 
 class Group

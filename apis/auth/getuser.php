@@ -1,8 +1,8 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/Rest.api.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Database.class.php");
-require_once("/var/www/api/api/lib/Group.class.php");
-require_once("/var/www/api/api/lib/User.class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/Group.class.php");
+require_once($_SERVER['DOCUMENT_ROOT'] . "/api/lib/User.class.php");
 ${basename(__FILE__, '.php')} = function () {
     if ($this->get_request_method() == "POST") {
         if (isset($_POST['username'])) {
